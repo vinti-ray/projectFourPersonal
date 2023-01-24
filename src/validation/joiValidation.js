@@ -1,5 +1,7 @@
 const Joi = require('joi');
 
+//==============================book joi====================================
+
 const bookJoi = Joi.object({
     
       title: Joi.string().required(),
@@ -20,6 +22,7 @@ const bookJoi = Joi.object({
     })
 
 
+//==================================user joi======================================================
 
 const userJOI=Joi.object({
   title: Joi.string().required().valid("Mr", "Mrs", "Miss"),
@@ -42,7 +45,7 @@ const userJOI=Joi.object({
   
 
 
-  
+  //====================review joi==========================
 
 })
     const reviewJoi = Joi.object({
@@ -61,11 +64,15 @@ const userJOI=Joi.object({
 
     })
 
+
+    //==========================login joi======================================
+
     const loginJoi=Joi.object({
       email:Joi.string().trim().required().regex(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/).message("please enter valid email"),
       password: Joi.string().trim().required().min(8).max(15).regex(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,15}$/).message("please enter valid password"),
     })
 
+//=============================update book joi==============================
 
     const updateJoi=Joi.object({
       title: Joi.string(),

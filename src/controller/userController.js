@@ -49,7 +49,7 @@ const loginUser = async function (req, res) {
 	    if (!password) return res.status(404).send({ status: false, message: "password is missing" })
 	    let getUser = await userModel.findOne({ email: email, password: password })
 	    if (!getUser) {
-	        return res.status(404).send({ status: false, message: "no user with this" })
+	        return res.status(404).send({ status: false, message: "no user with this id and password" })
 	    } else {
 	        let token = jwt.sign({ userId: getUser._id },"groupseven",{expiresIn:"30000"})
 	        return res.status(200).send({ status: true, message:"Success" ,data:token})

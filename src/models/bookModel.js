@@ -5,29 +5,35 @@ const bookSchema=mongoose.Schema({
 title:{
     type:String,
     required:true,
-    unique:true
+    unique:true,
+    trim:true
 },
 excerpt:{
     type:String,
-    required:true
+    required:true,
+    trim:true
 },
 userId:{
     type:objectId,
     required:true,
     ref:"user"
+  
 },
 ISBN:{
     type:String,
     required:true,
-    unique:true
+    unique:true,
+    trim:true
 },
 category:{
     type:String,
-    required:true
+    required:true,
+    trim:true
 },
 subcategory:{
     type:String,
-    required:true
+    required:true,
+    trim:true
 },
 reviews:{
     type:Number,
@@ -44,6 +50,7 @@ releasedAt:{
     type:Date,
     required:true
 }
-},{timestamps:true})
+},{timestamps:true},{ strict: false })
+
 
 module.exports=mongoose.model("book",bookSchema)

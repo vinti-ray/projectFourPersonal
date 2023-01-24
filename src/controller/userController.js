@@ -43,7 +43,7 @@ const createUser = async function (req, res) {
 
 const loginUser = async function (req, res) {
    try {
-	 let email = req.body.email
+	 let email = req.body.email 
 	    let password = req.body.password
 	    if (!email) return res.status(404).send({ status: false, message: "email is missing" })
 	    if (!password) return res.status(404).send({ status: false, message: "password is missing" })
@@ -51,7 +51,8 @@ const loginUser = async function (req, res) {
 	    if (!getUser) {
 	        return res.status(404).send({ status: false, message: "no user with this id and password" })
 	    } else {
-	        let token = jwt.sign({ userId: getUser._id },"groupseven",{expiresIn:"30000"})
+	        let token = jwt.sign({ userId: getUser._id },"groupseven",{expiresIn:"3000000"})
+            res.setHeader("x-auth-key",token)
 	        return res.status(200).send({ status: true, message:"Success" ,data:token})
         }
 	

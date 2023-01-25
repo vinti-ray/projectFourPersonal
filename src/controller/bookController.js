@@ -1,47 +1,46 @@
 const bookModel = require("../models/bookModel");
 const userModel = require("../models/userModel");
-
+const moment = require("moment")
 const mongoose = require("mongoose");
 const reviewModel = require("../models/reviewModel");
 const joi = require("joi");
-const {bookJoi, updateJoi } = require("../validation/joiValidation");
+const { bookJoi, updateJoi } = require("../validation/joiValidation");
 
 const createBook = async (req, res) => {
   try {
     let data = req.body;
 
-       let one=0
-       const validation = await bookJoi.validateAsync(data).then(()=>true).catch((err)=>{one=err.message; return null})
-   
-       if(!validation) return res.status(400).send({status :false,message:`${one}`})
-   
-       //no need
-       if(!mongoose.Types.ObjectId.isValid(data.userId)) return res.status(400).send({status:false,message:"userId is not a valid object id"})
-   
-       //no need
-       const findUser=await userModel.findById(data.userId)
-       if(!findUser) return res.status(400).send({status:false,message:"userId doesnt exist"})
+    let error = 0
+    const validation = await bookJoi.validateAsync(data).then(() => true).catch((err) => { error= err.message; return null })
 
-       title=data.title.trim()
-       ISBN=data.ISBN.trim()   //no need
+    if (!validation) return res.status(400).send({ status: false, message: `${error}` })
 
-       const existingData=await bookModel.findOne({$or:[{title:title},{ISBN:ISBN}]})
-       
-       if(existingData){
-           if(existingData.title==title)  return res.status(400).send({status:false,message:"title is already in use"})
-           if(existingData.ISBN==ISBN)  return res.status(400).send({status:false,message:"ISBN is already in use"})
-       }
-          
-       if (data.isDeleted === true) data.deletedAt = Date.now()
-   
-   //pending releasedat
-          const createData=await bookModel.create(data) 
-       
-          return res.status(201).send({ status: true, data: createData });
+    //no need
+    if (!mongoose.Types.ObjectId.isValid(data.userId)) return res.status(400).send({ status: false, message: "userId is not a valid object id" })
 
+    //no need
+    const findUser = await userModel.findById(data.userId)
+    if (!findUser) return res.status(400).send({ status: false, message: "userId doesnt exist" })
+
+    title = data.title.trim()
+    ISBN = data.ISBN.trim()   //no need
+
+    const existingData = await bookModel.findOne({ $or: [{ title: title }, { ISBN: ISBN }] })
+
+    if (existingData) {
+      if (existingData.title == title) return res.status(400).send({ status: false, message: "title is already in use" })
+      if (existingData.ISBN == ISBN) return res.status(400).send({ status: false, message: "ISBN is already in use" })
+    }
+
+    if (data.isDeleted === true) data.deletedAt = Date.now()
+
+    
+    data.releasedAt=Date.now()
+    const createData = await bookModel.create(data)
+
+    return res.status(201).send({ status: true, data: createData });
 
     // data.title = title.charAt(0).toUpperCase() + title.slice(1);
-
   } catch (error) {
     return res.status(500).send({ error: error.message });
   }
@@ -59,7 +58,7 @@ const getData = async (req, res) => {
       if (!mongoose.Types.ObjectId.isValid(data.userId))
         return res.status(400).send({ msg: "objectId is not valid" });
     }
-    const findInDb = await bookModel.find(filter).select({title: 1, excerpt: 1, userId: 1, category: 1,  reviews: 1, releasedAt: 1,}).sort({ title: 1 });
+    const findInDb = await bookModel.find(filter).select({ title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1, }).sort({ title: 1 });
 
     if (findInDb.length == 0)
       return res.status(404).send({ msg: "no book found" });
@@ -80,7 +79,7 @@ const getBookById = async (req, res) => {
 
     const findData = await bookModel.findById(bookId).lean();
 
-    if (!findData)  return res.status(404).send({ status: false, message: "no book found" });
+    if (!findData) return res.status(404).send({ status: false, message: "no book found" });
 
     const findInReviw = await reviewModel.find({ bookId: bookId }).select({ isDeleted: 0, createdAt: 0, updatedAt: 0 });
 
@@ -97,36 +96,32 @@ const getBookById = async (req, res) => {
 const updateData = async (req, res) => {
   try {
     let bookId = req.params.bookId;
-
-    if (!bookId) return res.status(400).send({ status: false, message: "please provide param" });
-//not working
-    if (!mongoose.Types.ObjectId.isValid(bookId)) return res.status(400).send({ status: false, message: "bookId is not valid" });
-
+    // if (!bookId) return res.status(400).send({ status: false, message: "please provide param" });
     let data = req.body;
 
-    if (Object.keys(data).length == 0)return res.status(400).send({ status: false, msg: "please send some data" });
+    if (Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: "please send some data" });
 
     let { title, ISBN, releasedAt, excerpt } = data;
 
     let one = 0;
-    const validation = await updateJoi.validateAsync(data).then(() => true).catch((err) => {one = err.message;return null; });
+    const validation = await updateJoi.validateAsync(data).then(() => true).catch((err) => { one = err.message; return null; });
 
-    if (!validation)  return res.status(400).send({ status: false, message: `${one}` });
+    if (!validation) return res.status(400).send({ status: false, message: `${one}` });
 
-if(title||ISBN){
-    const existingData = await bookModel.findOne({ $or: [{ title: title.trim() }, { ISBN: ISBN }]});
-    if (existingData) {
-      if (existingData.title == title.trim()) return res.status(400).send({ status: false, message: "title is already present" });
+    if (title || ISBN) {
+      const existingData = await bookModel.findOne({ $or: [{ title: title.trim() }, { ISBN: ISBN }] });
+      if (existingData) {
+        if (existingData.title == title.trim()) return res.status(400).send({ status: false, message: "title is already present" });
 
-      if (existingData.ISBN == ISBN) return res.status(400).send({ status: false, message: "ISBN is already present" })
+        if (existingData.ISBN == ISBN) return res.status(400).send({ status: false, message: "ISBN is already present" })
+      }
     }
-}
 
     const isExist = await bookModel.findOne({ _id: bookId, isDeleted: false });
 
     if (!isExist) return res.status(404).send({ status: false, message: "no book found with this id" });
 
-    const updateBook = await bookModel.findByIdAndUpdate( bookId, { $set: { title: title, excerpt: excerpt, releasedAt: releasedAt, ISBN: ISBN }, },{ new: true });
+    const updateBook = await bookModel.findByIdAndUpdate(bookId, { $set: { title: title, excerpt: excerpt, releasedAt: releasedAt, ISBN: ISBN }, }, { new: true });
 
     return res.status(200).send({ status: true, data: updateBook });
   } catch (error) {
@@ -137,25 +132,19 @@ if(title||ISBN){
 const deleteData = async (req, res) => {
   try {
     let bookId = req.params.bookId;
-    //not working
-    if (!mongoose.Types.ObjectId.isValid(bookId)) return res.status(400).send({ status: false, message: "bookId is not valid" });
-
-    const checkBook = await bookModel.findOne({ _id: bookId,isDeleted: false});
+    const checkBook = await bookModel.findOne({ _id: bookId, isDeleted: false });
 
     if (!checkBook) return res.status(404).send({ status: false, message: "no book found with this id" });
 
-   await bookModel.findByIdAndUpdate(bookId, {isDeleted: true,deletedAt: Date.now() });
+    await bookModel.findByIdAndUpdate(bookId, { isDeleted: true, deletedAt: Date.now() });
 
-    res.status(200).send({ status: true, message: "book deleted successfully"});
+    res.status(200).send({ status: true, message: "book deleted successfully" });
   } catch (error) {
     return res.status(500).send({ error: error.message });
   }
 };
 
-module.exports.createBook = createBook;
-module.exports.getData = getData;
-module.exports.getBookById = getBookById;
-module.exports.updateData = updateData;
-module.exports.deleteData = deleteData;
+module.exports = { createBook, getData, getBookById, updateData, deleteData }
+
 
 

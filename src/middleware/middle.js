@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bookModel = require("../models/bookModel");
+const mongoose=require("mongoose")
 
 const authentication = async function (req, res, next) {
   try {
@@ -32,7 +33,10 @@ const authForCreation = async function (req, res, next) {
 
 const authForDltAndPut = async (req, res, next) => {
   try {
+     if (!mongoose.Types.ObjectId.isValid(req.params.bookId)) return res.status(400).send({ status: false, message: "bookId is not valid" });
+
     const findBook = await bookModel.findById(req.params.bookId);
+    
 	if(!findBook)  return res.status(404).send({status:true,message:"no data found"})
     if (req.decode.userId != findBook.userId)
       return res.status(403).send({ message: "you are not authorised" }); 

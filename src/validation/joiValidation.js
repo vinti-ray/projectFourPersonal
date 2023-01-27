@@ -18,14 +18,21 @@ const bookJoi = Joi.object({
       reviews: Joi.number(),
       deletedAt: Joi.date(),
       isDeleted: Joi.boolean(),
-      releasedAt: Joi.date().required()
+      releasedAt: Joi.string().regex(/^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/).message("please enter in this format:YYYY-MM-DD")
     })
 
+    // _______________________________________GET JOI-------------------------------
+
+    const getJoi=Joi.object({
+      category:Joi.optional(),
+      userId:Joi.optional(),
+      subcategory:Joi.optional()
+    })
 
 //==================================user joi======================================================
 
 const userJOI=Joi.object({
-  title: Joi.string().required().valid("Mr", "Mrs", "Miss"),
+  title: Joi.string().trim().required().valid("Mr", "Mrs", "Miss"),
 
   name: Joi.string().trim().required().regex(/^[a-zA-Z ]+$/).message("please enter valid name"),
  
@@ -63,7 +70,6 @@ const userJOI=Joi.object({
 
     })
 
-
     //==========================login joi======================================
 
     const loginJoi=Joi.object({
@@ -74,26 +80,27 @@ const userJOI=Joi.object({
 //=============================update book joi==============================
 
     const updateJoi=Joi.object({
-      title: Joi.string(),
+      title: Joi.string().trim(),
 
       excerpt: Joi.string(),
 
-      ISBN: Joi.string().trim().regex(/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/).message("plz. give correct one"),
-      releasedAt: Joi.date()
+      ISBN: Joi.string().trim().regex(/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/).message("please enter valid ISBN"),
+
+      releasedAt: Joi.string().regex(/^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/).message(" please enter date in this format:YYYY-MM-DD")
     })
 
     // ==========================update review Joi==========================
 
     const updatereviewJoi=Joi.object({
       review:Joi.string(),
-      reviewedBy:Joi.string().trim().regex(/^[a-zA-Z ]+$/).message("plz enter valid reveiewer's name"),
+      reviewedBy:Joi.string().trim().regex(/^[a-zA-Z ]+$/).message("please enter valid reveiewer's name"),
       rating:Joi.number().min(1).max(5)
     })
 
 
 
 
-    module.exports={bookJoi,reviewJoi,userJOI,loginJoi,updateJoi,updatereviewJoi}
+    module.exports={bookJoi,getJoi,reviewJoi,userJOI,loginJoi,updateJoi,updatereviewJoi}
 
 
 

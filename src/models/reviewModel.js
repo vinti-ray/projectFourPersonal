@@ -10,7 +10,7 @@ const reviewSchema=mongoose.Schema({
    reviewedBy:{
     type:String,
     required:true,
-    default:"Guest"               //value is remaining
+    default:"Guest"        
    },
   reviewedAt:{
     type:Date,

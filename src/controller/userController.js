@@ -2,6 +2,8 @@ const userModel = require("../models/userModel")
 const {userJOI,loginJoi}=require("../validation/joiValidation")
 const jwt = require("jsonwebtoken")
 
+// -------------------------------------CREATE USER---------------------------------------
+
 const createUser = async function (req, res) {
     try {
 
@@ -33,7 +35,7 @@ const createUser = async function (req, res) {
     }
 }
 
-// ___________________________________________________
+// _____________________________________LOGIN USER______________
 
 const loginUser = async function (req, res) {
    try {
@@ -46,8 +48,8 @@ const loginUser = async function (req, res) {
    
        if(!validation) return res.status(400).send({status :false,message:`${one}`})
 
-       let email = data.email.trim()
-       let password = data.password.trim()
+       let email = data.email
+       let password = data.password
 
        let getUser = await userModel.findOne({ email: email, password: password })
        if (!getUser) {
@@ -62,6 +64,7 @@ const loginUser = async function (req, res) {
 } catch (error) {
 	return res.status(500).send({ error: error.message })
 }}
+// ---------------------------------EXPORTS----------------------------------------
 
 module.exports.createUser = createUser;
 module.exports.loginUser=loginUser;

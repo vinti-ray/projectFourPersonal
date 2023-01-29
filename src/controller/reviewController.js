@@ -37,7 +37,7 @@ const reviewCreate = async (req, res) => {
         return res.status(200).send({ status: true, message: `review count updated successfully for ${updateBook.title}`, data: updateBook })
 
     } catch (error) {
-        return res.status(500).send({ error: error.message })
+        return res.status(500).send({status: false, error: error.message })
     }
 }
 
@@ -78,7 +78,7 @@ const reviewUpdate = async (req, res) => {
        return  res.status(200).send({status:true,message:"Book lists", data: bookCheck })
     }
     catch (error) {
-        return res.status(500).send({ error: error.message })
+        return res.status(500).send({status: false, error: error.message })
     }
 }
 
@@ -106,10 +106,10 @@ const deleteReview = async (req, res) => {
 	
 	    await bookModel.findByIdAndUpdate(bookId, { $inc: { reviews: -1 } })
 	
-	    return res.status(200).send({ message: "successfully deleted"})
+	    return res.status(200).send({status:true, message: "successfully deleted"})
 
 } catch (error) {
-	return res.status(500).send({error:error.message})
+	return res.status(500).send({status: false,error:error.message})
 }}
 
 // -------------------------------------EXPORTS----------------------------------

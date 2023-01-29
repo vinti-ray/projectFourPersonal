@@ -5,10 +5,10 @@ const mongoose=require("mongoose")
 const authentication = async function (req, res, next) {
   try {
     let token = req.headers["x-auth-key"];
-    if (!token) return res.status(401).send({ message: "token not present" });
+    if (!token) return res.status(401).send({status: false, message: "token not present" });
 
     jwt.verify(token, "groupseven", (err,decode) => {
-      if (err) {return res.status(401).send({ err: err.message })
+      if (err) {return res.status(401).send({status: false, err: err.message })
 	}else{
 		req.decode = decode;
 		return next(); 
@@ -16,20 +16,20 @@ const authentication = async function (req, res, next) {
     });
 
   } catch (error) {
-    return res.status(500).send({ error: error.message });
+    return res.status(500).send({status: false, error: error.message });
   }
 };
 
 const authForCreation = async function (req, res, next) {
   try {
-    if(!req.body.userId) return res.status(400).send({message:"user id is not present"})
-    if(!mongoose.Types.ObjectId.isValid(req.body.userId)) return res.status(400).send({message:"user id is not valid"})
+    if(!req.body.userId) return res.status(400).send({status: false, message:"user id is not present"})
+    if(!mongoose.Types.ObjectId.isValid(req.body.userId)) return res.status(400).send({status: false, message:"user id is not valid"})
     if (req.decode.userId != req.body.userId)
-      return res.status(403).send({ message: "you are not authorised" });
+      return res.status(403).send({status: false, message: "you are not authorised" });
 
     next();
   } catch (error) {
-    return res.status(500).send({ error: error.message });
+    return res.status(500).send({status: false, error: error.message });
   }
 };
 
@@ -42,11 +42,11 @@ const authForDltAndPut = async (req, res, next) => {
     if (!findBook) return res.status(404).send({ status: false, message: "no book found with this id " });
 
     if (req.decode.userId != findBook.userId)
-      return res.status(403).send({ message: "you are not authorised" }); 
+      return res.status(403).send({status: false, message: "you are not authorised" }); 
 
     next();
   } catch (error) {
-    return res.status(500).send({ error: error.message });
+    return res.status(500).send({status: false, error: error.message });
   }
 };
 

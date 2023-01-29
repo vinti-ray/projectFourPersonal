@@ -31,7 +31,7 @@ const createUser = async function (req, res) {
 	    return res.status(201).send({ status: true, message: "Success", data: create })
 
     } catch (error) {
-        return res.status(500).send({ error: error.message })
+        return res.status(500).send({status: false, error: error.message })
     }
 }
 
@@ -62,7 +62,7 @@ const loginUser = async function (req, res) {
 
 	
 } catch (error) {
-	return res.status(500).send({ error: error.message })
+	return res.status(500).send({status: false, error: error.message })
 }}
 // ---------------------------------EXPORTS----------------------------------------
 

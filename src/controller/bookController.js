@@ -34,7 +34,7 @@ const createBook = async (req, res) => {
     return res.status(201).send({ status: true, data: createData });
 
   } catch (error) {
-    return res.status(500).send({ error: error.message });
+    return res.status(500).send({status: false, error: error.message });
   }
 };
 
@@ -60,11 +60,11 @@ const getData = async (req, res) => {
     const findInDb = await bookModel.find(filter).select({ title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1, }).sort({ title: 1 });
 
     if (findInDb.length == 0)
-      return res.status(404).send({ msg: "no book found" });
+      return res.status(404).send({status: false, message: "no book found" });
 
     return res.status(200).send({ status: true, message: "Books list", data: findInDb });
   }catch (error) {
-    return res.status(500).send({ error: error.message });
+    return res.status(500).send({status: false, error: error.message });
   }
 };
 
@@ -87,7 +87,7 @@ const getBookById = async (req, res) => {
     return res.status(200).send({ status: true, message: "Books list", data: findData });
 
   } catch (error) {
-    return res.status(500).send({ error: error.message });
+    return res.status(500).send({status: false, error: error.message });
   }
 };
 
@@ -121,7 +121,7 @@ const updateData = async (req, res) => {
 
     return res.status(200).send({ status: true, data: updateBook });
   } catch (error) {
-    return res.status(500).send({ error: error.message });
+    return res.status(500).send({status: false, error: error.message });
   }
 };
 
@@ -132,10 +132,10 @@ const deleteData = async (req, res) => {
 
     await bookModel.findByIdAndUpdate(bookId, { isDeleted: true, deletedAt: Date.now() });
 
-    res.status(200).send({ status: true, message: "book deleted successfully" });
+  return  res.status(200).send({ status: true, message: "book deleted successfully" });
 
   } catch (error) {
-    return res.status(500).send({ error: error.message });
+    return res.status(500).send({status: false, error: error.message });
   }
 };
 

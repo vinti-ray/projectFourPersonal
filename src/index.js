@@ -2,10 +2,11 @@ const express=require("express")
 const app=express()
 const route=require("./routes/route")
 const mongoose= require('mongoose')
-
+const cors=require("cors")
 mongoose.set("strictQuery", true);
 
 app.use(express.json());
+app.use(cors())
 app.use("/", route);
 
 mongoose.connect("mongodb+srv://piyushtale:piyushrajutale@cluster0.t7w7ipr.mongodb.net/group7Database")

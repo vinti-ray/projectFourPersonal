@@ -76,11 +76,11 @@ const getBookById = async (req, res) => {
     
     if (!mongoose.Types.ObjectId.isValid(bookId)) return res.status(400).send({ status: false, message: "bookId is not valid" });
 
-    const findData = await bookModel.findOne({_id:bookId,isdeleted:false}).lean();
+    const findData = await bookModel.findOne({_id:bookId,isDeleted:false}).lean();
 
     if (!findData) return res.status(404).send({ status: false, message: "no book found" });
 
-    const findInReviw = await reviewModel.find({ bookId: bookId,isdeleted:false }).select({ isDeleted: 0, createdAt: 0, updatedAt: 0 });
+    const findInReviw = await reviewModel.find({ bookId: bookId,isDeleted:false }).select({ isDeleted: 0, createdAt: 0, updatedAt: 0 });
 
     findData["reviewsData"] = findInReviw;
 

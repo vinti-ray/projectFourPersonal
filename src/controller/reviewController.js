@@ -34,7 +34,7 @@ const reviewCreate = async (req, res) => {
         let responsedata = { _id: reviewSave._id, bookId: reviewSave.bookId, reviewedBy: reviewSave.reviewedBy, reviewedAt: reviewSave.reviewedAt, rating: reviewSave.rating, review: reviewSave.review }
 
         updateBook["reviewsData"] = responsedata
-        return res.status(200).send({ status: true, message: `review count updated successfully for ${updateBook.title}`, data: updateBook })
+        return res.status(201).send({ status: true, message: `review count updated successfully for ${updateBook.title}`, data: updateBook })
 
     } catch (error) {
         return res.status(500).send({status: false, error: error.message })

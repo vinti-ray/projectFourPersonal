@@ -4,12 +4,14 @@ const moment = require("moment")
 const mongoose = require("mongoose");
 const reviewModel = require("../models/reviewModel");
 const { bookJoi, updateJoi,getJoi} = require("../validation/joiValidation");
+const { uploadFile } = require('../controller/aws')
 
 // -------------------------------------CREATE BOOK----------------------------------------------
 
 const createBook = async (req, res) => {
   try {
-    let data = req.body;
+    let fetchJSON = req.body.data // pass JSON key-value and fetch through req.body  in form-data
+    let data = (JSON.parse(fetchJSON)) //Parse it
 
     let error = 0
     const validation = await bookJoi.validateAsync(data).then(() => true).catch((err) => { error= err.message; return null })
@@ -28,6 +30,19 @@ const createBook = async (req, res) => {
 
     if (data.isDeleted === true) data.deletedAt = Date.now()
     if(!data.releasedAt)  {data.releasedAt=Date.now()}
+
+           /* ----------------Business Logic------------- */
+
+    let temp
+    let files = req.files // Get the file to upload
+    if (files && files.length > 0) {
+        let uploadFileUrl = await uploadFile(files[0])
+        temp = uploadFileUrl
+    }
+    else {
+        return res.status(400).send({ message: "No File Found" })
+    }
+    data.bookCover = temp
     
     const createData = await bookModel.create(data)
 

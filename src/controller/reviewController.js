@@ -7,9 +7,12 @@ const mongoose = require("mongoose")
 
 const reviewCreate = async (req, res) => {
     try {
+        
         let data = req.body
 
         if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "please provide data" })
+
+
 
         let { review, rating, reviewedBy } = data
 
@@ -20,6 +23,13 @@ const reviewCreate = async (req, res) => {
         if (!validation) return res.status(400).send({ status: false, message: `${error}` })
 
         if (!req.params.bookId) return res.status(400).send({status:false, message: "please provide bookId in params" })
+
+        let bookId = req.params.bookId
+
+        let bookIdBody = req.body.bookId
+
+        if((!mongoose.Types.ObjectId.isValid(bookId))|| (!mongoose.Types.ObjectId.isValid(bookIdBody)))
+        return res.status(400).send({ status:false,message: "type of bookId in params or bookId in body is not a valid objectId" });
 
         if (req.body.bookId != req.params.bookId) return res.status(400).send({ status:false,message: "bookId should be equal in params and body" })
 

@@ -53,7 +53,7 @@ const loginUser = async function (req, res) {
 
        let getUser = await userModel.findOne({ email: email, password: password })
        if (!getUser) {
-           return res.status(404).send({ status: false, message: "no user found with this credential" })
+           return res.status(400).send({ status: false, message: "no user found with this credential" })
        } else {
            let token = jwt.sign({ userId: getUser._id },"groupseven",{expiresIn:"4h"})
            res.setHeader("x-auth-key",token)

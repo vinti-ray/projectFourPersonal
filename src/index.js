@@ -2,13 +2,17 @@ const express=require("express")
 const app=express()
 const route=require("./routes/route")
 const mongoose= require('mongoose')
+const multer=require("multer")
+const cors=require("cors")
 
 mongoose.set("strictQuery", true);
 
 app.use(express.json());
+app.use(multer().any())
+app.use(cors())
 app.use("/", route);
 
-mongoose.connect("mongodb+srv://piyushtale:piyushrajutale@cluster0.t7w7ipr.mongodb.net/group7Database")
+mongoose.connect("mongodb+srv://vintiray:7091201680@cluster0.ahtxrqr.mongodb.net/bookManagement")
     .then(() => console.log("Mongodb is connected."))
     .catch((err) => console.log(err));
 
